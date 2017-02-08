@@ -4,6 +4,7 @@
 #
 
 import psycopg2
+import bleach
 
 
 def connect():
@@ -13,15 +14,34 @@ def connect():
 
 def deleteMatches():
     """Remove all the match records from the database."""
+    conn = connect()
+    c = conn.cursor()
+    query = "DELETE FROM matches;"
+    c.execute(query)
+    conn.commit()
+    conn.close()
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
+    conn = connect()
+    c = conn.cursor()
+    query = "DELETE FROM players;"
+    c.execute(query)
+    conn.commit()
+    conn.close()
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
-
+    conn = connect()
+    c = conn.cursor()
+    query = "SELECT COUNT(*) FROM players;"
+    c.execute(query)
+    number_of_players = c.fetchone()[0]
+    conn.commit()
+    conn.close()
+    return number_of_players
 
 def registerPlayer(name):
     """Adds a player to the tournament database.
@@ -32,6 +52,12 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
+    conn = connect()
+    c = conn.cursor()
+    clean_name = bleach.clean(name, strip=True)
+    c.execute("INSERT INTO players (player_name) VALUES(%s)", (clean_name, ))
+    conn.commit()
+    conn.close()
 
 
 def playerStandings():
@@ -47,6 +73,14 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
+    conn = connect()
+    c = conn.cursor()
+    query = "SELECT * FROM playerstandings;"
+    c.execute(query)
+    standings = c.fetchall()
+    conn.commit()
+    conn.close()
+    return standings
 
 
 def reportMatch(winner, loser):
@@ -56,8 +90,13 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
- 
- 
+    conn = connect()
+    c = conn.cursor()
+    c.execute("INSERT INTO matches (winner, loser) VALUES(%s, %s)", (winner, loser, ))
+    conn.commit()
+    conn.close()
+
+
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
   
@@ -73,5 +112,19 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    conn = connect()
+    c = conn.cursor()
+    query = "SELECT * FROM playerstandings;"
+    c.execute(query)
+    standings = c.fetchall()
+    count = len(standings)
+    pairings_list = []
 
+    for i in range(0, count-1, 2):
+        pair = (standings[i][0], standings[i][1], standings[i+1][0], standings[i+1][1])
+        pairings_list.append(pair)
+
+    conn.commit()
+    conn.close()
+    return pairings_list
 

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Item Catalog</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:100,300" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+
+<body>
+<div class="container">
+    <div class="row bg-footer">
+        <div class="col-md-3" class="text-thick">
+            <h5><strong><a href="/catalog">Home</a></strong></h5>
+        </div>
+
+        {% if user %}
+        <div class="col-md-3 text-right">
+            <h5><strong><a class="text-thick" href="/blog/newpost">Write a post</a></strong></h5>
+        </div>
+        <div class="col-md-6 text-right">
+            <h5><strong>Welcome, {{user.username}}
+                (<a class="text-thick" href="/logout">Logout</a>)</strong></h5>
+        </div>
+        {% else %}
+        <div class="col-md-9 text-right">
+            <h5><strong><a class="text-thick" href="/login">Login</a>
+                |
+                <a class="text-thick" href="/signup">Signup</a></strong></h5>
+        </div>
+        {% endif %}
+    </div>
+
+    <section>
+        {% block content %}
+        {% endblock %}
+    </section>
+
+    <footer>
+        <div class="row">
+            <div class="col-md-12 text-center bg-footer">
+                <h5 class="text-muted"></h5>
+            </div>
+        </div>
+    </footer>
+</div>
+</body>
+</html>
+

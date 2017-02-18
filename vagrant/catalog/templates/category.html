@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-6" class="text-thick">
+    <h5><strong>Categories</strong></h5>
+  </div>
+  <div class="col-md-6" class="text-thick">
+    {% if category %}
+    <h5><strong>{{ category.name }} items</strong></h5>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    {% if categories %}
+    {% for c in categories %}
+    <a href="{{ url_for('get_category', category_id=c.id) }}">
+      {{ c.name }}
+    </a>
+    <br>
+    {% endfor %}
+    {% endif %}
+  </div>
+
+  <div class="col-md-6">
+    {% if category %}
+    {% for i in category.items %}
+    <a href="{{ url_for('get_item', category_id=category.id, item_id=i.item_id) }}">
+      {{ i.name }}
+    </a>
+    <br>
+    {% endfor %}
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

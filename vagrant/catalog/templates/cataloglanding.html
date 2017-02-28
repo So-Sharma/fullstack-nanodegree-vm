@@ -2,34 +2,44 @@
 
 {% block content %}
 
+{% if error %}
 <div class="row">
-  <div class="col-md-6" class="text-thick">
+  <div class="col-md-12 text-danger">
+    {{error}}
+  </div>
+</div>
+{% endif %}
+
+<div class="row">
+  <div class="col-md-4" class="text-thick">
     <h5><strong>Categories</strong></h5>
   </div>
-    <div class="col-md-6" class="text-thick">
+  <div class="col-md-4" class="text-thick">
     <h5><strong>Latest Items</strong></h5>
+  </div>
+  <div class="col-md-4" class="text-thick">
+    <a href="{{ url_for('add_item') }}">Add Item</a>
   </div>
 </div>
 
 <div class="row">
-    <div class="col-md-6">
-      {% for c in categories %}
-      <a href="{{ url_for('get_category', category_id=c.id) }}">
-        {{ c.name }}
-        </a>
-        <br>
-      {% endfor %}
-    </div>
-
-  <div class="col-md-6">
-  <a href="{{ url_for('add_item') }}">Add Item</a>
-<br>
-{% for i in items %}
-  {{ i.name }}
-  <br>
-{% endfor %}
+  <div class="col-md-4">
+    {% for c in categories %}
+    <a href="{{ url_for('get_category', category_id=c.id) }}">
+      {{ c.name }}
+    </a>
+    <br>
+    {% endfor %}
   </div>
 
+  <div class="col-md-4">
+    {% for i in items %}
+    <a href="{{ url_for('get_item', category_id=i.category_id, item_id=i.item_id) }}">
+      {{ i.name }} ({{i.category.name}})
+    </a>
+    <br>
+    {% endfor %}
+  </div>
 </div>
 
 {% endblock %}

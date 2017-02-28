@@ -5,23 +5,23 @@
 
 <form method="post" class="form-horizontal">
 
-<div class="row">
-  <div class="col-md-12" class="text-thick">
-    <h5><strong>{{ item.name }}</strong></h5>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-12" class="text-thick">
-    <h5><strong>Description:{{ item.description }}</strong></h5>
-  </div>
-</div>
-
- <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-    <a href="{{ url_for('update_item', item_id=item.item_id) }}" class="button">Edit</a>
-    <a href="{{ url_for('delete_item', item_id=item.item_id) }}" class="button">Delete</a>
+    <div class="row">
+        <div class="col-md-12 text-thick">
+            <h5><strong>{{ item.name }}</strong></h5>
+        </div>
     </div>
-  </div>
+    <div class="row">
+        <div class="col-md-12 text-thick">
+            <h5><strong>Description: {{ item.description }}</strong></h5>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <a href="{{ url_for('update_item', item_id=item.item_id) }}" class="button">Edit</a>
+            <a href="{{ url_for('delete_item', item_id=item.item_id) }}" class="button">Delete</a>
+        </div>
+    </div>
 
 </form>
 

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if item %}
+
+<form method="post" action="{{ url_for('delete_item', item_id=item.item_id) }}" class="form-horizontal">
+
+    <div class="row">
+        <div class="col-md-12 text-thick">
+            Are you sure you want to delete the item
+            <strong>{{ item.name }}</strong>
+        </div>
+    </div>
+
+    {% if login_session and login_session['user_id'] %}
+    {% if login_session['user_id'] == item.user_id %}
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <input name="submit" type="submit" value="Delete Item" class="button form-control margin-bottom">
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+</form>
+
+{% endif %}
+
+{% endblock %}

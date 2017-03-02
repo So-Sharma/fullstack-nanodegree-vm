@@ -16,12 +16,16 @@
         </div>
     </div>
 
+    {% if login_session and login_session['user_id'] %}
+    {% if login_session['user_id'] == item.user_id %}
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             <a href="{{ url_for('update_item', item_id=item.item_id) }}" class="button">Edit</a>
             <a href="{{ url_for('delete_item', item_id=item.item_id) }}" class="button">Delete</a>
         </div>
     </div>
+    {% endif %}
+    {% endif %}
 
 </form>
 

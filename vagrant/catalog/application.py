@@ -11,6 +11,7 @@ import httplib2
 import json
 from flask import make_response
 import requests
+from functools import wraps
 
 app = Flask(__name__)
 
@@ -27,6 +28,17 @@ APPLICATION_NAME = "Item Catalog"
 
 # Make login_session available to templates
 app.jinja_env.globals['login_session'] = login_session
+
+
+# Function to check if a user is logged in
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in login_session:
+            flash('Please log in to add/update an item')
+            return redirect(url_for('get_catalog'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 # Displays the catalog landing/home page
@@ -86,19 +98,16 @@ def get_item_json(item_id):
 # Allows the user to update the details of an item in the catalog
 @app.route('/item/<int:item_id>/update',
            methods=['GET', 'POST'])
+@login_required
 def update_item(item_id):
     categories = session.query(Category).all()
     item = session.query(Item).filter(Item.item_id == item_id).first()
 
     if request.method == 'GET':
-        if 'user_id' not in login_session:
-            flash('Please log in to update an item')
         return render_template('edititem.html', item=item,
                                categories=categories)
     else:
-        if 'user_id' not in login_session:
-            flash('Please log in to update an item')
-        elif item.user_id != login_session['user_id']:
+        if item.user_id != login_session['user_id']:
             flash('You do not have permission to edit the item details')
         else:
             name = request.form['name']
@@ -119,22 +128,28 @@ def update_item(item_id):
 
 
 # Allows a user to delete an item
-@app.route('/item/<int:item_id>/delete')
+@app.route('/item/<int:item_id>/delete', methods=['GET', 'POST'])
+@login_required
 def delete_item(item_id):
-    item = session.query(Item).filter(Item.item_id == item_id).first()
-    if 'user_id' not in login_session:
-        flash('Please log in to delete an item')
-    elif item.user_id != login_session['user_id']:
-        flash('You do not have permission to delete the item')
+    if request.method == 'GET':
+        item = session.query(Item).filter(Item.item_id == item_id).first()
+        return render_template('deleteitemconfirm.html',
+                               item=item)
     else:
-        session.delete(item)
-        session.commit()
-        return redirect(url_for('get_catalog'))
-    return redirect(url_for('update_item', item_id=item_id))
+        item = session.query(Item).filter(Item.item_id == item_id).first()
+        if item.user_id != login_session['user_id']:
+            flash('You do not have permission to delete the item')
+        else:
+            # Delete item from the database
+            session.delete(item)
+            session.commit()
+            return redirect(url_for('get_catalog'))
+        return redirect(url_for('update_item', item_id=item_id))
 
 
 # Allows a user to add an item
 @app.route('/item/new', methods=['GET', 'POST'])
+@login_required
 def add_item():
 
     if request.method == 'GET':
@@ -142,27 +157,28 @@ def add_item():
         return render_template('newitem.html', categories=categories)
     else:
         error = None
-        if 'user_id' not in login_session:
-            error = 'Please log in to add an item'
+        name = request.form['name']
+        description = request.form['description']
+        category = request.form['category']
+        user_id = login_session['user_id']
+        if not (name and description and category and user_id):
+            error = 'One or more fields are blank'
+            categories = session.query(Category).all()
+            return render_template('newitem.html', error=error,
+                                   categories=categories)
         else:
-            name = request.form['name']
-            description = request.form['description']
-            category = request.form['category']
-            user_id = login_session['user_id']
-            if not (name and description and category and user_id):
-                error = 'One or more fields are blank'
-            else:
-                item = Item(name=name,
-                            description=description,
-                            category_id=category,
-                            user_id=user_id)
-                session.add(item)
-                session.commit()
+            # Add item to the database
+            item = Item(name=name,
+                        description=description,
+                        category_id=category,
+                        user_id=user_id)
+            session.add(item)
+            session.commit()
 
         categories = session.query(Category).all()
         latest_items = session.query(Item).order_by(
-            Item.created_on.desc()).limit(5).all()
-        # return redirect(url_for('get_catalog', error=error))
+           Item.created_on.desc()).limit(5).all()
+
         return render_template('cataloglanding.html', error=error,
                                categories=categories,
                                items=latest_items)

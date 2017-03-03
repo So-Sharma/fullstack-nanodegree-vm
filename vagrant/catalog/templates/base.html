@@ -14,8 +14,8 @@
 <body>
 <div class="container">
     <div class="row bg-footer">
-        <div class="col-md-3" class="text-thick">
-            <h5><strong><a href="/catalog">Home</a></strong></h5>
+        <div class="col-md-3 text-thick">
+            <h5><strong><a href="{{ url_for('get_catalog') }}">Home</a></strong></h5>
         </div>
 
         {% if login_session and login_session['user_id'] %}
@@ -27,7 +27,7 @@
 
         {% else %}
         <div class="col-md-9 text-right">
-            <h5><strong><a class="text-thick" href="/login">Login</a>
+            <h5><strong><a class="text-thick" href="{{ url_for('login') }}">Login</a>
             </strong></h5>
         </div>
 

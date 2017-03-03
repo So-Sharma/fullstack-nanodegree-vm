@@ -188,7 +188,7 @@ def add_item():
 @app.route('/login')
 def login():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                    for x in xrange(32))
+                    for x in range(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
 
@@ -220,7 +220,7 @@ def gconnect():
     url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
            % access_token)
     h = httplib2.Http()
-    result = json.loads(h.request(url, 'GET')[1])
+    result = json.loads(h.request(url, 'GET')[1].decode("utf8"))
     # If there was an error in the access token info, abort.
     if result.get('error') is not None:
         response = make_response(json.dumps(result.get('error')), 500)

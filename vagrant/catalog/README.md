@@ -8,7 +8,10 @@
 
 - Install Vagrant and VirtualBox
 - Start Vagrant: Open cmd/Git bash and go to the Vagrant folder. Use the command 'vagrant up' to launch your vitual machine. Type the command 'vagrant ssh' to log into it
-- Run application: Go to /vagrant/catalog folder and run the application (python application.py ). The item catalog can be accessed at localhost:8000/
+- Database: Go to /vagrant/catalog folder
+    - Create the database: python database_setup.py
+    - Populate the categories: python database_init.py
+- Run application: Run the application (python application.py). The item catalog can be accessed at localhost:8000/
 - JSON end points:
     - Catalog: /catalog/json/
     - Category: /category/<category id>/json
